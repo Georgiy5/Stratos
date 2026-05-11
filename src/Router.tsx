@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import Onboarding from './pages/Onboarding/Onboarding'
 import Layout from './pages/layout'
+import Maps from './pages/Maps/Maps'
 
 const router = createBrowserRouter([
     {
@@ -13,7 +14,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/maps',
-                element: <h1>Maps</h1>,
+                element: <Maps />,
             },
             {
                 path: '/models',

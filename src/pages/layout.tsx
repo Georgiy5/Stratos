@@ -1,11 +1,16 @@
 import { Outlet } from 'react-router'
 import Header from '../components/Header/Header'
+import { Box } from '@mantine/core'
+import { FooterCentered } from '../components/Footer/Footer'
 
 export default function Layout() {
     return (
         <>
             <Header />
-            <Outlet />
+            <Box mt={60}>
+                <Outlet />
+            </Box>
+            <FooterCentered />
         </>
     )
 }

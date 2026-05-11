@@ -1,8 +1,18 @@
-import { Group, Paper, Stack, Text, useMantineColorScheme } from '@mantine/core'
 import {
+    Paper,
+    Stack,
+    Text,
+    ThemeIcon,
+    useMantineColorScheme,
+} from '@mantine/core'
+import {
+    Icon360,
     IconCoin,
+    IconInvoice,
     IconMan,
     IconMoneybag,
+    IconMoneybagPlus,
+    IconMountain,
     IconPlane,
     IconWorld,
 } from '@tabler/icons-react'
@@ -14,43 +24,47 @@ export default function MapDescr() {
         {
             name: 'Численность населения',
             descr: 'Демографический портрет региона',
-            icon: <IconMan size={32} stroke={1.5} />,
+            icon: <IconMan size={24} stroke={1.5} />,
         },
         {
             name: 'Плотность населения',
             descr: 'Как люди распределены по территории',
-            icon: <IconWorld size={32} stroke={1.5} />,
+            icon: <IconWorld size={24} stroke={1.5} />,
         },
         {
             name: 'Миграции',
             descr: 'Куда и откуда движутся человеческие потоки',
-            icon: <IconPlane size={32} stroke={1.5} />,
+            icon: <IconPlane size={24} stroke={1.5} />,
         },
         {
             name: 'Валовой региональный продукт',
             descr: 'Экономическая мощь Кубани',
-            icon: <IconMoneybag size={32} stroke={1.5} />,
+            icon: <IconMoneybag size={24} stroke={1.5} />,
         },
         {
             name: 'Уровень безработицы',
             descr: 'Социальный градусник рынка труда',
-            icon: <IconCoin size={32} stroke={1.5} />,
+            icon: <IconCoin size={24} stroke={1.5} />,
         },
         {
             name: 'Инвестиции в основной капитал',
             descr: 'Драйверы роста и обновления',
+            icon: <IconMoneybagPlus size={24} stroke={1.5} />,
         },
         {
             name: 'Дотации',
             descr: 'Бюджетная поддержка и её география',
+            icon: <IconInvoice size={24} stroke={1.5} />,
         },
         {
             name: 'Структура экономики по ОКВЭД',
             descr: 'Чем живёт и зарабатывает край',
+            icon: <Icon360 size={24} stroke={1.5} />,
         },
         {
             name: 'Рельеф',
             descr: 'Природный каркас от степей до горных хребтов',
+            icon: <IconMountain size={24} stroke={1.5} />,
         },
     ]
 
@@ -59,17 +73,16 @@ export default function MapDescr() {
             key={item.name}
             p="md"
             radius="md"
-            withBorder
             bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
-            w={300}
+            w={{ base: '100%', sm: 280, md: 300, lg: 380 }}
         >
-            <Stack h={'100%'}>
-                <Group>
-                    {item.icon}
+            <Stack h={'100%'} ta={'left'}>
+                <Stack>
+                    <ThemeIcon size={36}>{item.icon}</ThemeIcon>
                     <Text size="md" fw={700}>
                         {item.name}
                     </Text>
-                </Group>
+                </Stack>
 
                 <Text c={'dimmed'}>{item.descr}</Text>
             </Stack>

@@ -37,11 +37,16 @@ export default function Header() {
             px={32}
             justify="space-between"
             align="center"
+            pos={'fixed'}
             style={{
                 borderBottom:
                     colorScheme === 'dark'
                         ? '1px solid var(--mantine-color-gray-9)'
                         : '1px solid var(--mantine-color-gray-2)',
+                zIndex: 999,
+                top: 0,
+                left: 0,
+                right: 0,
             }}
         >
             <Group
