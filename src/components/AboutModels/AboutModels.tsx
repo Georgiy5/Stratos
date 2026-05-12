@@ -1,14 +1,11 @@
 import {
-    Divider,
-    Group,
     Paper,
-    Stack,
     ThemeIcon,
     useMantineColorScheme,
     Text,
     List,
 } from '@mantine/core'
-import { IconCheck, IconWorldCheck } from '@tabler/icons-react'
+import { IconCheck } from '@tabler/icons-react'
 
 export default function AboutModels() {
     const { colorScheme } = useMantineColorScheme()

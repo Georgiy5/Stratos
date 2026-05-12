@@ -1,17 +1,13 @@
 import {
-    Box,
-    Center,
     Divider,
     Group,
     Paper,
-    SimpleGrid,
     Stack,
     Text,
     ThemeIcon,
     useMantineColorScheme,
 } from '@mantine/core'
 import { IconWorldCheck } from '@tabler/icons-react'
-import MapDescr from '../MapDescr/MapDescr'
 
 export default function AboutProject() {
     const { colorScheme } = useMantineColorScheme()

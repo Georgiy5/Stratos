@@ -1,25 +1,10 @@
-import {
-    Box,
-    Button,
-    Center,
-    Divider,
-    Group,
-    Overlay,
-    Paper,
-    SimpleGrid,
-    Stack,
-    Text,
-    useMantineColorScheme,
-} from '@mantine/core'
-import { useNavigate } from 'react-router'
+import { Box, Center, Divider, SimpleGrid, Stack, Text } from '@mantine/core'
 import MapDescr from '../../components/MapDescr/MapDescr'
 import AboutProject from '../../components/AboutProject/AboutProject'
 import RegionDescr from '../../components/RegionDescr/RegionDescr'
 import AboutModels from '../../components/AboutModels/AboutModels'
 
 export default function Onboarding() {
-    const navigate = useNavigate()
-
     return (
         <Center p={'xl'}>
             <Stack align="center" gap={'xl'}>

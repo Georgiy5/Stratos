@@ -5,7 +5,6 @@ import {
     Text,
     ThemeIcon,
     useMantineColorScheme,
-    useMantineTheme,
 } from '@mantine/core'
 import {
     IconCalculator,
@@ -18,7 +17,6 @@ import {
 import { useLocation, useNavigate } from 'react-router'
 
 export default function Header() {
-    const theme = useMantineTheme()
     const navigate = useNavigate()
     const location = useLocation()
     const { colorScheme, toggleColorScheme } = useMantineColorScheme()

@@ -1,13 +1,9 @@
 import {
-    IconBrandInstagram,
     IconBrandTelegram,
-    IconBrandTwitter,
     IconBrandVk,
     IconBrandWhatsapp,
-    IconBrandYoutube,
-    IconChartPieFilled,
 } from '@tabler/icons-react'
-import { ActionIcon, Anchor, Group, ThemeIcon, Text } from '@mantine/core'
+import { ActionIcon, Anchor, Group, Text } from '@mantine/core'
 import classes from './Footer.module.css'
 import { useNavigate } from 'react-router'
 
