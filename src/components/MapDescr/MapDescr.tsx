@@ -33,7 +33,7 @@ export default function MapDescr() {
         },
         {
             name: 'Миграции',
-            descr: 'Куда и откуда движутся человеческие потоки',
+            descr: 'Направления и маршруты перемещения людей',
             icon: <IconPlane size={24} stroke={1.5} />,
         },
         {
