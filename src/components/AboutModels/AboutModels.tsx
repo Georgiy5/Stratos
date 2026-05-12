@@ -37,8 +37,8 @@ export default function AboutModels() {
                     </ThemeIcon>
                 }
             >
-                <List.Item>Кобба-Дугласа</List.Item>
                 <List.Item>Харрода-Домара</List.Item>
+                <List.Item>Кобба-Дугласа </List.Item>
                 <List.Item>Солоу</List.Item>
             </List>
             <Text>

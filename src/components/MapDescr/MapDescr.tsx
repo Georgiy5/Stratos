@@ -28,7 +28,7 @@ export default function MapDescr() {
         },
         {
             name: 'Плотность населения',
-            descr: 'Как люди распределены по территории',
+            descr: 'Как население распределено по территории',
             icon: <IconWorld size={24} stroke={1.5} />,
         },
         {
