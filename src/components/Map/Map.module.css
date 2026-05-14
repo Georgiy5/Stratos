@@ -1,0 +1,9 @@
+.map path {
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.map path:hover {
+    fill: crimson;
+    stroke-width: 4;
+}

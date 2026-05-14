@@ -7,7 +7,7 @@ export default function Layout() {
     return (
         <>
             <Header />
-            <Box mt={60}>
+            <Box mt={72} style={{ flex: 1 }}>
                 <Outlet />
             </Box>
             <FooterCentered />

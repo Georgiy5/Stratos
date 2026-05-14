@@ -23,7 +23,7 @@ export default function MapDescr() {
     const arr = [
         {
             name: 'Численность населения',
-            descr: 'Демографический портрет региона',
+            descr: 'Демографический профиль региона',
             icon: <IconMan size={24} stroke={1.5} />,
         },
         {
