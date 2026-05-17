@@ -1,8 +1,8 @@
 import { Box, Center, Divider, SimpleGrid, Stack, Text } from '@mantine/core'
-import MapDescr from '../../components/MapDescr/MapDescr'
-import AboutProject from '../../components/AboutProject/AboutProject'
-import RegionDescr from '../../components/RegionDescr/RegionDescr'
-import AboutModels from '../../components/AboutModels/AboutModels'
+import MapDescr from '../../components/Onboarding/MapDescr/MapDescr'
+import AboutProject from '../../components/Onboarding/AboutProject/AboutProject'
+import RegionDescr from '../../components/Onboarding/RegionDescr/RegionDescr'
+import AboutModels from '../../components/Onboarding/AboutModels/AboutModels'
 
 export default function Onboarding() {
     return (
