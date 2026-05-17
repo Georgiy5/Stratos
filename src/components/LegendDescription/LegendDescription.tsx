@@ -1,4 +1,4 @@
-import { Text, Stack, useMantineColorScheme } from '@mantine/core'
+import { Text, Stack } from '@mantine/core'
 
 type LegendDescriptionProps = {
     text?: string
