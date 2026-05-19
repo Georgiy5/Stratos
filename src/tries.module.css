@@ -1,8 +1,0 @@
-.tries path {
-    transition: all 0.3s;
-    cursor: pointer;
-}
-.tries path:hover {
-    fill: crimson;
-    stroke-width: 4;
-}

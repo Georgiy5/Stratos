@@ -14,12 +14,12 @@ export default function Models() {
 
     return (
         <Center p={'xl'} w={'100%'}>
-            <Stack maw={1400} align="center" w={'100%'}>
+            <Stack maw={1320} align="center" w={'100%'}>
                 <Title order={2}>Модели прогнозирования</Title>
                 <Text c="dimmed" size="md" maw={640} ta={'center'}>
                     Выберите модель для прогноза.
                 </Text>
-                <Group justify="center">
+                <Group justify="center" mb={20}>
                     <Select
                         placeholder="Выберите модель"
                         data={modelOptions.map(({ value, label }) => ({

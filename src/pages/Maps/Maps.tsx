@@ -11,16 +11,12 @@ import {
 } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { useEffect, useMemo, useState } from 'react'
-import Legend from '../../components/Legend/Legend'
+import LegendOverlay from '../../components/LegendOverlay/LegendOverlay'
+import type { LegendItem } from '../../components/LegendOverlay/LegendOverlay'
 import LegendDescription from '../../components/LegendDescription/LegendDescription'
 import Map from '../../components/Map/Map'
 import PanZoom from '../../components/Map/PanZoom'
 import metrics from '../../metrics/metrics.json'
-
-type LegendItem = {
-    label: string
-    color: string
-}
 
 type MapMeta = Record<
     string,
@@ -43,7 +39,7 @@ const mapMeta = metricsData.mapMeta ?? {}
 const mapOptions = [
     { value: 'Chislennost', label: 'Численность' },
     { value: 'Plotnost', label: 'Плотность' },
-    { value: 'Migrations', label: 'Миграции' },
+    { value: 'Migrations', label: 'Миграция' },
     { value: 'VRP', label: 'ВРП' },
     { value: 'Bezrabotnye', label: 'Безработные' },
     { value: 'IOK', label: 'ИОК' },
@@ -69,7 +65,7 @@ export default function Maps() {
     const [year, setYear] = useState<string | null>(years[0] ?? null)
 
     useEffect(() => {
-        setYear(years[16] ?? null)
+        setYear(years[years.length - 1] ?? null)
     }, [years])
 
     const colors = useMemo(() => {
@@ -101,6 +97,7 @@ export default function Maps() {
                         onChange={setMetricKey}
                         size="sm"
                         w={isCompact ? '100%' : 260}
+                        allowDeselect={false}
                     />
                 </Stack>
 
@@ -139,37 +136,14 @@ export default function Maps() {
                                             onChange={setYear}
                                             size="xs"
                                             w={isCompact ? 160 : 180}
+                                            allowDeselect={false}
                                         />
                                     </Box>
 
-                                    <Box
-                                        style={{
-                                            position: 'absolute',
-                                            left: 12,
-                                            bottom: 12,
-                                            zIndex: 3,
-                                            maxWidth: isCompact
-                                                ? 'calc(100% - 24px)'
-                                                : 360,
-                                        }}
-                                    >
-                                        <Paper
-                                            radius="md"
-                                            p="xs"
-                                            bg={
-                                                colorScheme === 'dark'
-                                                    ? 'rgba(0, 0, 0, 0.55)'
-                                                    : 'rgba(255, 255, 255, 0.85)'
-                                            }
-                                            style={{
-                                                backdropFilter: 'blur(3px)',
-                                            }}
-                                        >
-                                            <Legend
-                                                items={meta?.legend ?? []}
-                                            />
-                                        </Paper>
-                                    </Box>
+                                    <LegendOverlay
+                                        items={meta?.legend ?? []}
+                                        isCompact={isCompact}
+                                    />
 
                                     <PanZoom
                                         width={mapWidth}

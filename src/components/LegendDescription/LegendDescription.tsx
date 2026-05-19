@@ -1,18 +1,26 @@
-import { Text, Stack } from '@mantine/core'
+import { Text, Title, Box } from '@mantine/core'
 
 type LegendDescriptionProps = {
     text?: string
 }
 
 export default function LegendDescription({ text }: LegendDescriptionProps) {
+    const title = text?.split('!')[0]
+    const description = text?.split('!')[1]
+    const influence = text?.split('!')[2]
+
     return (
-        <Stack py={'md'}>
-            <Text fw={600} mb={8}>
-                Описание карты
+        <Box ta={'justify'} px={'xl'}>
+            <Title order={3} fw={600} mb={12}>
+                {title}
+            </Title>
+            <Text size="md" c="dimmed">
+                {description}
             </Text>
-            <Text size="sm" c="dimmed">
-                {text ?? 'Описание недоступно.'}
+
+            <Text size="md" c="dimmed">
+                {influence}
             </Text>
-        </Stack>
+        </Box>
     )
 }
