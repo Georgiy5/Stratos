@@ -97,14 +97,11 @@ export default function KD() {
                 </Box>
             </Group>
 
-            <Text c="dimmed" size="lg">
+            <Text c="dimmed" size="lg" mb={10}>
                 Y = {numbers.a0} × {numbers.K.name}
                 <sup>{numbers.a1}</sup> × {numbers.L.name}
-                <sup>{numbers.a2}</sup>
+                <sup>{numbers.a2}</sup> = {yNew.toFixed(2)}
             </Text>
-
-            <br />
-            {yNew}
             <Center>
                 <Box
                     style={{

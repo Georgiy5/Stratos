@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
     PointerEvent as ReactPointerEvent,
     ReactNode,
@@ -27,6 +27,53 @@ export default function PanZoom({
     const [isPanning, setIsPanning] = useState(false)
     const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
     const lastPointRef = useRef<{ x: number; y: number } | null>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null)
+    const isPointerInsideRef = useRef(false)
+
+    useEffect(() => {
+        const isInsideContainer = (event: Event) => {
+            const container = containerRef.current
+            if (!container || !(event.target instanceof Node)) return false
+            return container.contains(event.target)
+        }
+
+        const shouldBlock = (event: Event) =>
+            isPointerInsideRef.current || isInsideContainer(event)
+
+        const handleNativeWheel = (event: WheelEvent) => {
+            if (shouldBlock(event)) {
+                event.preventDefault()
+            }
+        }
+
+        const handleGesture = (event: Event) => {
+            if (shouldBlock(event)) {
+                event.preventDefault()
+            }
+        }
+
+        const options = { passive: false, capture: true } as const
+
+        document.addEventListener('wheel', handleNativeWheel, options)
+        window.addEventListener('wheel', handleNativeWheel, options)
+        document.addEventListener('gesturestart', handleGesture, options)
+        document.addEventListener('gesturechange', handleGesture, options)
+        document.addEventListener('gestureend', handleGesture, options)
+        window.addEventListener('gesturestart', handleGesture, options)
+        window.addEventListener('gesturechange', handleGesture, options)
+        window.addEventListener('gestureend', handleGesture, options)
+
+        return () => {
+            document.removeEventListener('wheel', handleNativeWheel, options)
+            window.removeEventListener('wheel', handleNativeWheel, options)
+            document.removeEventListener('gesturestart', handleGesture, options)
+            document.removeEventListener('gesturechange', handleGesture, options)
+            document.removeEventListener('gestureend', handleGesture, options)
+            window.removeEventListener('gesturestart', handleGesture, options)
+            window.removeEventListener('gesturechange', handleGesture, options)
+            window.removeEventListener('gestureend', handleGesture, options)
+        }
+    }, [])
 
     const clamp = (value: number, min: number, max: number) =>
         Math.min(max, Math.max(min, value))
@@ -58,6 +105,11 @@ export default function PanZoom({
     const stopPanning = () => {
         setIsPanning(false)
         lastPointRef.current = null
+    }
+
+    const handlePointerLeave = () => {
+        isPointerInsideRef.current = false
+        stopPanning()
     }
 
     const handleWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
@@ -110,6 +162,7 @@ export default function PanZoom({
 
     return (
         <div
+            ref={containerRef}
             style={{
                 width,
                 height,
@@ -125,7 +178,10 @@ export default function PanZoom({
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={stopPanning}
-            onPointerLeave={stopPanning}
+            onPointerLeave={handlePointerLeave}
+            onPointerEnter={() => {
+                isPointerInsideRef.current = true
+            }}
             onWheelCapture={handleWheel}
             onDoubleClick={handleDoubleClick}
             onTouchMove={(event) => event.preventDefault()}
