@@ -4,6 +4,7 @@ import styles from './ModelMap.module.css'
 type MapProps = {
     w: number
     y: number
+    model: 'KD' | 'Solou'
 }
 
 const REGION_WEIGHTS: Record<string, string> = {
@@ -63,7 +64,7 @@ const LEGEND_STEPS = [
     { max: Number.POSITIVE_INFINITY, color: '#640304' },
 ]
 
-export default function ModelMap({ w, y }: MapProps) {
+export default function ModelMap({ w, y, model }: MapProps) {
     const svgRef = useRef<SVGSVGElement | null>(null)
 
     const getLegendColor = (value: number) =>
@@ -80,7 +81,18 @@ export default function ModelMap({ w, y }: MapProps) {
                 const weight = Number(weightStr)
                 if (!Number.isFinite(weight)) return
 
-                const value = y * weight * 1_000_000_000
+                // if (model === 'KD') {
+                //     const value = y * weight * 1_000_000_000
+                // } else if (model === 'Solou') {
+                //     const value = y * weight * 1_000_000_000
+                // }
+                let value = 0
+                {
+                    model === 'KD' && (value = y * weight * 1_000_000_000)
+                }
+                {
+                    model === 'Solou' && (value = y * weight * 1_000_000)
+                }
                 derivedColors[id] = getLegendColor(value)
             })
         }

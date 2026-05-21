@@ -5,7 +5,7 @@ import Solou from '../../components/Models/Solou/Solou'
 import HD from '../../components/Models/HD/HD'
 
 export default function Models() {
-    const [model, setModel] = useState<string | null>(null)
+    const [model, setModel] = useState<string | null>('KD')
     const modelOptions = [
         { value: 'KD', label: 'Кобба-Дугласа' },
         { value: 'Solou', label: 'Солоу' },
@@ -29,6 +29,7 @@ export default function Models() {
                         value={model}
                         onChange={setModel}
                         size="sm"
+                        allowDeselect={false}
                     />
                 </Group>
                 {model === 'KD' && <KD />}

@@ -124,7 +124,7 @@ export default function KD() {
                         width={1200}
                         height={1200 * 0.522}
                     >
-                        <ModelMap w={1200} y={yNew} />
+                        <ModelMap w={1200} y={yNew} model="KD" />
                     </PanZoom>
                 </Box>
             </Center>
