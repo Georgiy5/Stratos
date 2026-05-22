@@ -4,7 +4,7 @@ import styles from './ModelMap.module.css'
 type MapProps = {
     w: number
     y: number
-    model: 'KD' | 'Solou'
+    model: 'KD' | 'Solou' | 'HD'
 }
 
 const REGION_WEIGHTS: Record<string, string> = {
@@ -81,14 +81,12 @@ export default function ModelMap({ w, y, model }: MapProps) {
                 const weight = Number(weightStr)
                 if (!Number.isFinite(weight)) return
 
-                // if (model === 'KD') {
-                //     const value = y * weight * 1_000_000_000
-                // } else if (model === 'Solou') {
-                //     const value = y * weight * 1_000_000_000
-                // }
                 let value = 0
                 {
                     model === 'KD' && (value = y * weight * 1_000_000_000)
+                }
+                {
+                    model === 'HD' && (value = y * weight * 1_000_000_000)
                 }
                 {
                     model === 'Solou' && (value = y * weight * 1_000_000)
