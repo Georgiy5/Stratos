@@ -1,0 +1,31 @@
+.modelButton {
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    padding: 4px 6px;
+    border-radius: 8px;
+    transition:
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.modelButton:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--mantine-color-primary-6) 14%,
+        transparent
+    );
+    box-shadow: inset 0 0 0 1px
+        color-mix(in srgb, var(--mantine-color-primary-6) 22%, transparent);
+}
+
+.modelButton:active {
+    background-color: color-mix(
+        in srgb,
+        var(--mantine-color-primary-6) 22%,
+        transparent
+    );
+    transform: translateY(1px);
+}
