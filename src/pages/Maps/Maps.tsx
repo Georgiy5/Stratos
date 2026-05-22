@@ -11,8 +11,8 @@ import {
 } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { useEffect, useMemo, useState } from 'react'
-import LegendOverlay from '../../components/LegendOverlay/LegendOverlay'
 import type { LegendItem } from '../../components/LegendOverlay/LegendOverlay'
+import Legend from '../../components/Legend/Legend'
 import LegendDescription from '../../components/LegendDescription/LegendDescription'
 import Map from '../../components/Map/Map'
 import PanZoom from '../../components/Map/PanZoom'
@@ -75,13 +75,13 @@ export default function Maps() {
 
     const meta = metricKey ? mapMeta[metricKey] : undefined
 
-    const mapWidth = isStacked ? 760 : 1200
-    const mapHeight = mapWidth * 0.522
+    const mapWidth = isCompact ? 320 : isStacked ? 760 : 1200
+    const mapHeight = mapWidth * (isCompact ? 0.9 : 0.522)
 
     return (
-        <Center w="100%" p={'xl'}>
+        <Center w="100%" p={isCompact ? 'md' : 'xl'}>
             <Box maw={1320} w="100%">
-                <Stack align="center" mb={20}>
+                <Stack align="center" mb={isCompact ? 12 : 20}>
                     <Title order={2}>Карты показателей</Title>
                     <Text c="dimmed" size="md" maw={640} ta={'center'}>
                         Выберите набор данных и год, чтобы увидеть распределение
@@ -98,18 +98,19 @@ export default function Maps() {
                         size="sm"
                         w={isCompact ? '100%' : 260}
                         allowDeselect={false}
+                        styles={{ input: { fontSize: 16 } }}
                     />
                 </Stack>
 
                 <Group align="stretch" gap="lg" w="100%">
                     <Paper
                         radius={18}
-                        p={'xl'}
+                        p={'md'}
                         style={{ flex: '1 1 0' }}
                         bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
                     >
                         <Stack gap="lg">
-                            <Center w="100%" mih={isStacked ? 420 : 520}>
+                            <Center w="100%">
                                 <Box
                                     p={0}
                                     style={{
@@ -137,13 +138,9 @@ export default function Maps() {
                                             size="xs"
                                             w={isCompact ? 160 : 180}
                                             allowDeselect={false}
+                                            styles={{ input: { fontSize: 16 } }}
                                         />
                                     </Box>
-
-                                    <LegendOverlay
-                                        items={meta?.legend ?? []}
-                                        isCompact={isCompact}
-                                    />
 
                                     <PanZoom
                                         width={mapWidth}
@@ -156,8 +153,52 @@ export default function Maps() {
                                     >
                                         <Map w={mapWidth} colors={colors} />
                                     </PanZoom>
+                                    {!isCompact && (
+                                        <Box
+                                            style={{
+                                                position: 'absolute',
+                                                left: 12,
+                                                bottom: 12,
+                                                zIndex: 3,
+                                                maxWidth: 360,
+                                            }}
+                                        >
+                                            <Paper
+                                                radius="md"
+                                                p="xs"
+                                                bg={
+                                                    colorScheme === 'dark'
+                                                        ? 'rgba(0, 0, 0, 0.55)'
+                                                        : 'rgba(255, 255, 255, 0.85)'
+                                                }
+                                                style={{
+                                                    backdropFilter: 'blur(3px)',
+                                                }}
+                                            >
+                                                <Legend
+                                                    items={meta?.legend ?? []}
+                                                />
+                                            </Paper>
+                                        </Box>
+                                    )}
                                 </Box>
                             </Center>
+                            {isCompact && (
+                                <Paper
+                                    radius="md"
+                                    p="md"
+                                    bg={
+                                        colorScheme === 'dark'
+                                            ? 'dark.7'
+                                            : 'gray.1'
+                                    }
+                                >
+                                    <Text fw={600} size="sm" mb="xs">
+                                        Легенда
+                                    </Text>
+                                    <Legend items={meta?.legend ?? []} />
+                                </Paper>
+                            )}
                             <LegendDescription text={meta?.description} />
                         </Stack>
                     </Paper>

@@ -6,7 +6,7 @@ import {
     List,
     UnstyledButton,
 } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconCheck } from '@tabler/icons-react'
 import { useMemo, useState } from 'react'
 import { MODEL_ITEMS } from './modelContent'
@@ -17,6 +17,7 @@ export default function AboutModels() {
     const { colorScheme } = useMantineColorScheme()
     const [opened, { open, close }] = useDisclosure(false)
     const [openedId, setOpenedId] = useState<string | null>(null)
+    const isCompact = useMediaQuery('(max-width: 720px)')
     const activeModel = useMemo(
         () => MODEL_ITEMS.find((item) => item.id === openedId) ?? null,
         [openedId],
@@ -43,10 +44,11 @@ export default function AboutModels() {
 
             <Paper
                 maw={800}
-                p="xl"
+                p={isCompact ? 'md' : 'xl'}
                 shadow="sm"
                 bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
                 ta={'left'}
+                w="100%"
             >
                 <Text>
                     Для тех, кто хочет заглянуть за горизонт текущей статистики,

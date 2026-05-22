@@ -10,7 +10,7 @@ export default function LegendDescription({ text }: LegendDescriptionProps) {
     const influence = text?.split('!')[2]
 
     return (
-        <Box ta={'justify'} px={'xl'}>
+        <Box ta={'justify'} px={{ base: 'md', sm: 'xl' }}>
             <Title order={3} fw={600} mb={12}>
                 {title}
             </Title>

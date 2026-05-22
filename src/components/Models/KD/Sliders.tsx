@@ -1,4 +1,5 @@
 import { Select, Slider, Stack, SimpleGrid } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 
 type SlidersProps = {
     kOptions: string[]
@@ -29,9 +30,17 @@ export default function Sliders({
     setLPercentOnChange,
     setLPercentOnEnd,
 }: SlidersProps) {
+    const isCompact = useMediaQuery('(max-width: 720px)')
+
     return (
-        <SimpleGrid cols={2} spacing={50}>
-            <Stack w={'100%'} gap={40} mb={60} align="center" justify="center">
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={{ base: 'xl', sm: 50 }}>
+            <Stack
+                w={'100%'}
+                gap={40}
+                mb={isCompact ? 20 : 60}
+                align={isCompact ? 'stretch' : 'center'}
+                justify="center"
+            >
                 <Select
                     label="Выберите K"
                     placeholder="Выберите K"
@@ -43,6 +52,9 @@ export default function Sliders({
                     onChange={setK}
                     size="md"
                     allowDeselect={false}
+                    w="100%"
+                    maw={320}
+                    styles={{ input: { fontSize: 16 } }}
                 />
                 <Slider
                     value={kPercentOnChange}
@@ -55,11 +67,16 @@ export default function Sliders({
                         { value: 50, label: '50%' },
                         { value: 80, label: '80%' },
                     ]}
-                    w={200}
+                    w="100%"
                 />
             </Stack>
 
-            <Stack w={'100%'} gap={40} mb={60} align="center">
+            <Stack
+                w={'100%'}
+                gap={40}
+                mb={isCompact ? 20 : 60}
+                align={isCompact ? 'stretch' : 'center'}
+            >
                 <Select
                     label="Выберите L"
                     placeholder="Выберите L"
@@ -71,6 +88,9 @@ export default function Sliders({
                     onChange={setL}
                     size="md"
                     allowDeselect={false}
+                    w="100%"
+                    maw={320}
+                    styles={{ input: { fontSize: 16 } }}
                 />
 
                 <Slider
@@ -84,7 +104,7 @@ export default function Sliders({
                         { value: 50, label: '50%' },
                         { value: 80, label: '80%' },
                     ]}
-                    w={200}
+                    w="100%"
                 />
             </Stack>
         </SimpleGrid>

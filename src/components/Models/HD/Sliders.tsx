@@ -1,4 +1,5 @@
 import { SimpleGrid, Slider, Stack, Text } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 
 type Numbers = {
     K: { name: string }
@@ -24,9 +25,20 @@ export default function Sliders({
     setLPercentOnChange,
     setLPercentOnEnd,
 }: SlidersProps) {
+    const isCompact = useMediaQuery('(max-width: 720px)')
+
     return (
-        <SimpleGrid cols={2} spacing={50} w={'100%'}>
-            <Stack w={'100%'} align="center" justify="center" gap={30}>
+        <SimpleGrid
+            cols={{ base: 1, sm: 2 }}
+            spacing={{ base: 'xl', sm: 50 }}
+            w={'100%'}
+        >
+            <Stack
+                w={'100%'}
+                align={isCompact ? 'stretch' : 'center'}
+                justify="center"
+                gap={30}
+            >
                 <Slider
                     value={kPercentOnChange}
                     onChange={setKPercentOnChange}
@@ -38,7 +50,7 @@ export default function Sliders({
                         { value: 50, label: '50%' },
                         { value: 80, label: '80%' },
                     ]}
-                    w={200}
+                    w="100%"
                 />
                 <Text>
                     Изменение {numbers.K.name}
@@ -46,7 +58,12 @@ export default function Sliders({
                     <sub style={{ fontSize: '0.8em' }}>t-1</sub>
                 </Text>
             </Stack>
-            <Stack w={'100%'} align="center" justify="center" gap={30}>
+            <Stack
+                w={'100%'}
+                align={isCompact ? 'stretch' : 'center'}
+                justify="center"
+                gap={30}
+            >
                 <Slider
                     value={lPercentOnChange}
                     onChange={setLPercentOnChange}
@@ -58,7 +75,7 @@ export default function Sliders({
                         { value: 50, label: '50%' },
                         { value: 80, label: '80%' },
                     ]}
-                    w={200}
+                    w="100%"
                 />
                 <Text>
                     Изменение {numbers.L.name}

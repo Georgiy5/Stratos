@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type {
     PointerEvent as ReactPointerEvent,
     ReactNode,
+    TouchList as ReactTouchList,
     WheelEvent as ReactWheelEvent,
 } from 'react'
 
@@ -24,13 +25,32 @@ export default function PanZoom({
     maxScale = 4,
     background,
 }: PanZoomProps) {
+    const isCompact = width < 480
+    const buttonSize = isCompact ? 30 : 34
+    const buttonRadius = isCompact ? 8 : 10
+    const buttonFontSize = isCompact ? 16 : 18
     const [isPanning, setIsPanning] = useState(false)
     const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
+    const [isCoarsePointer, setIsCoarsePointer] = useState(false)
     const lastPointRef = useRef<{ x: number; y: number } | null>(null)
+    const touchPanningRef = useRef(false)
+    const lastTouchCenterRef = useRef<{ x: number; y: number } | null>(null)
+    const lastTouchDistanceRef = useRef<number | null>(null)
     const containerRef = useRef<HTMLDivElement | null>(null)
     const isPointerInsideRef = useRef(false)
 
     useEffect(() => {
+        const mediaQuery = window.matchMedia(
+            '(hover: none) and (pointer: coarse)',
+        )
+
+        const updatePointerType = () => {
+            setIsCoarsePointer(mediaQuery.matches)
+        }
+
+        updatePointerType()
+        mediaQuery.addEventListener('change', updatePointerType)
+
         const isInsideContainer = (event: Event) => {
             const container = containerRef.current
             if (!container || !(event.target instanceof Node)) return false
@@ -52,6 +72,106 @@ export default function PanZoom({
             }
         }
 
+        const handleNativeTouchStart = (event: TouchEvent) => {
+            if (!shouldBlock(event)) return
+            event.preventDefault()
+
+            if (event.touches.length === 1) {
+                const touch = event.touches[0]
+                setIsPanning(true)
+                touchPanningRef.current = true
+                lastPointRef.current = { x: touch.clientX, y: touch.clientY }
+                resetTouchZoomState()
+                return
+            }
+
+            if (event.touches.length >= 2) {
+                setIsPanning(false)
+                touchPanningRef.current = false
+                lastPointRef.current = null
+                lastTouchCenterRef.current = getTouchCenter(event.touches)
+                lastTouchDistanceRef.current = getTouchDistance(event.touches)
+            }
+        }
+
+        const handleNativeTouchMove = (event: TouchEvent) => {
+            if (!shouldBlock(event)) return
+            event.preventDefault()
+
+            if (
+                event.touches.length === 1 &&
+                touchPanningRef.current &&
+                lastPointRef.current
+            ) {
+                const touch = event.touches[0]
+                const deltaX = touch.clientX - lastPointRef.current.x
+                const deltaY = touch.clientY - lastPointRef.current.y
+                lastPointRef.current = { x: touch.clientX, y: touch.clientY }
+                setTransform((prev) =>
+                    clampTransform({
+                        ...prev,
+                        x: prev.x + deltaX,
+                        y: prev.y + deltaY,
+                    }),
+                )
+                return
+            }
+
+            if (event.touches.length >= 2) {
+                touchPanningRef.current = false
+                const rect = containerRef.current?.getBoundingClientRect()
+                if (!rect) return
+                const center = getTouchCenter(event.touches)
+                const distance = getTouchDistance(event.touches)
+
+                if (
+                    lastTouchCenterRef.current &&
+                    lastTouchDistanceRef.current &&
+                    distance > 0
+                ) {
+                    const zoomFactor = distance / lastTouchDistanceRef.current
+                    const centerX = center.x - rect.left
+                    const centerY = center.y - rect.top
+
+                    setTransform((prev) => {
+                        const nextScale = clamp(
+                            prev.scale * zoomFactor,
+                            minScale,
+                            maxScale,
+                        )
+                        const ratio = nextScale / prev.scale
+                        return clampTransform({
+                            scale: nextScale,
+                            x: centerX - (centerX - prev.x) * ratio,
+                            y: centerY - (centerY - prev.y) * ratio,
+                        })
+                    })
+                }
+
+                lastTouchCenterRef.current = center
+                lastTouchDistanceRef.current = distance
+            }
+        }
+
+        const handleNativeTouchEnd = (event: TouchEvent) => {
+            if (!shouldBlock(event)) return
+            event.preventDefault()
+
+            if (event.touches.length === 0) {
+                stopPanning()
+                resetTouchZoomState()
+                return
+            }
+
+            if (event.touches.length === 1) {
+                const touch = event.touches[0]
+                setIsPanning(true)
+                touchPanningRef.current = true
+                lastPointRef.current = { x: touch.clientX, y: touch.clientY }
+                resetTouchZoomState()
+            }
+        }
+
         const options = { passive: false, capture: true } as const
 
         document.addEventListener('wheel', handleNativeWheel, options)
@@ -62,16 +182,45 @@ export default function PanZoom({
         window.addEventListener('gesturestart', handleGesture, options)
         window.addEventListener('gesturechange', handleGesture, options)
         window.addEventListener('gestureend', handleGesture, options)
+        document.addEventListener('touchstart', handleNativeTouchStart, options)
+        document.addEventListener('touchmove', handleNativeTouchMove, options)
+        document.addEventListener('touchend', handleNativeTouchEnd, options)
+        document.addEventListener('touchcancel', handleNativeTouchEnd, options)
 
         return () => {
+            mediaQuery.removeEventListener('change', updatePointerType)
             document.removeEventListener('wheel', handleNativeWheel, options)
             window.removeEventListener('wheel', handleNativeWheel, options)
             document.removeEventListener('gesturestart', handleGesture, options)
-            document.removeEventListener('gesturechange', handleGesture, options)
+            document.removeEventListener(
+                'gesturechange',
+                handleGesture,
+                options,
+            )
             document.removeEventListener('gestureend', handleGesture, options)
             window.removeEventListener('gesturestart', handleGesture, options)
             window.removeEventListener('gesturechange', handleGesture, options)
             window.removeEventListener('gestureend', handleGesture, options)
+            document.removeEventListener(
+                'touchstart',
+                handleNativeTouchStart,
+                options,
+            )
+            document.removeEventListener(
+                'touchmove',
+                handleNativeTouchMove,
+                options,
+            )
+            document.removeEventListener(
+                'touchend',
+                handleNativeTouchEnd,
+                options,
+            )
+            document.removeEventListener(
+                'touchcancel',
+                handleNativeTouchEnd,
+                options,
+            )
         }
     }, [])
 
@@ -104,7 +253,120 @@ export default function PanZoom({
 
     const stopPanning = () => {
         setIsPanning(false)
+        touchPanningRef.current = false
         lastPointRef.current = null
+    }
+
+    const getTouchCenter = (touches: ReactTouchList | TouchList) => {
+        const first = touches[0]
+        const second = touches[1]
+        return {
+            x: (first.clientX + second.clientX) / 2,
+            y: (first.clientY + second.clientY) / 2,
+        }
+    }
+
+    const getTouchDistance = (touches: ReactTouchList | TouchList) => {
+        const first = touches[0]
+        const second = touches[1]
+        const deltaX = second.clientX - first.clientX
+        const deltaY = second.clientY - first.clientY
+        return Math.hypot(deltaX, deltaY)
+    }
+
+    const resetTouchZoomState = () => {
+        lastTouchCenterRef.current = null
+        lastTouchDistanceRef.current = null
+    }
+
+    const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        if (event.touches.length === 1) {
+            const touch = event.touches[0]
+            setIsPanning(true)
+            touchPanningRef.current = true
+            lastPointRef.current = { x: touch.clientX, y: touch.clientY }
+            resetTouchZoomState()
+            return
+        }
+
+        if (event.touches.length >= 2) {
+            setIsPanning(false)
+            touchPanningRef.current = false
+            lastPointRef.current = null
+            lastTouchCenterRef.current = getTouchCenter(event.touches)
+            lastTouchDistanceRef.current = getTouchDistance(event.touches)
+        }
+    }
+
+    const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+        if (
+            event.touches.length === 1 &&
+            touchPanningRef.current &&
+            lastPointRef.current
+        ) {
+            const touch = event.touches[0]
+            const deltaX = touch.clientX - lastPointRef.current.x
+            const deltaY = touch.clientY - lastPointRef.current.y
+            lastPointRef.current = { x: touch.clientX, y: touch.clientY }
+            setTransform((prev) =>
+                clampTransform({
+                    ...prev,
+                    x: prev.x + deltaX,
+                    y: prev.y + deltaY,
+                }),
+            )
+            return
+        }
+
+        if (event.touches.length >= 2) {
+            touchPanningRef.current = false
+            const rect = event.currentTarget.getBoundingClientRect()
+            const center = getTouchCenter(event.touches)
+            const distance = getTouchDistance(event.touches)
+
+            if (
+                lastTouchCenterRef.current &&
+                lastTouchDistanceRef.current &&
+                distance > 0
+            ) {
+                const zoomFactor = distance / lastTouchDistanceRef.current
+                const centerX = center.x - rect.left
+                const centerY = center.y - rect.top
+
+                setTransform((prev) => {
+                    const nextScale = clamp(
+                        prev.scale * zoomFactor,
+                        minScale,
+                        maxScale,
+                    )
+                    const ratio = nextScale / prev.scale
+                    return clampTransform({
+                        scale: nextScale,
+                        x: centerX - (centerX - prev.x) * ratio,
+                        y: centerY - (centerY - prev.y) * ratio,
+                    })
+                })
+            }
+
+            lastTouchCenterRef.current = center
+            lastTouchDistanceRef.current = distance
+        }
+    }
+
+    const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+        if (event.touches.length === 0) {
+            stopPanning()
+            resetTouchZoomState()
+            return
+        }
+
+        if (event.touches.length === 1) {
+            const touch = event.touches[0]
+            setIsPanning(true)
+            touchPanningRef.current = true
+            lastPointRef.current = { x: touch.clientX, y: touch.clientY }
+            resetTouchZoomState()
+        }
     }
 
     const handlePointerLeave = () => {
@@ -184,13 +446,28 @@ export default function PanZoom({
             }}
             onWheelCapture={handleWheel}
             onDoubleClick={handleDoubleClick}
-            onTouchMove={(event) => event.preventDefault()}
+            onTouchStartCapture={(event) => {
+                event.preventDefault()
+                handleTouchStart(event)
+            }}
+            onTouchMoveCapture={(event) => {
+                event.preventDefault()
+                handleTouchMove(event)
+            }}
+            onTouchEndCapture={(event) => {
+                event.preventDefault()
+                handleTouchEnd(event)
+            }}
+            onTouchCancelCapture={(event) => {
+                event.preventDefault()
+                handleTouchEnd(event)
+            }}
         >
             <div
                 style={{
                     position: 'absolute',
-                    top: 12,
-                    right: 12,
+                    top: isCompact ? 8 : 12,
+                    right: isCompact ? 8 : 12,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 8,
@@ -202,12 +479,12 @@ export default function PanZoom({
                     onClick={zoomIn}
                     onPointerDown={(event) => event.stopPropagation()}
                     style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: 10,
+                        width: buttonSize,
+                        height: buttonSize,
+                        borderRadius: buttonRadius,
                         border: '1px solid rgba(0, 0, 0, 0.08)',
                         background: 'rgba(255, 255, 255, 0.5)',
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                         fontWeight: 600,
                         lineHeight: '32px',
                         cursor: 'pointer',
@@ -224,12 +501,12 @@ export default function PanZoom({
                     onClick={zoomOut}
                     onPointerDown={(event) => event.stopPropagation()}
                     style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: 10,
+                        width: buttonSize,
+                        height: buttonSize,
+                        borderRadius: buttonRadius,
                         border: '1px solid rgba(0, 0, 0, 0.08)',
                         background: 'rgba(255, 255, 255, 0.5)',
-                        fontSize: 18,
+                        fontSize: buttonFontSize,
                         fontWeight: 600,
                         lineHeight: '32px',
                         cursor: 'pointer',
@@ -247,6 +524,7 @@ export default function PanZoom({
                     transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
                     transformOrigin: '0 0',
                     display: 'inline-block',
+                    pointerEvents: isCoarsePointer ? 'none' : 'auto',
                 }}
             >
                 {children}

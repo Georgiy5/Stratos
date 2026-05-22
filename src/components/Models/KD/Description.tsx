@@ -2,7 +2,7 @@ import { Stack, Text, Title } from '@mantine/core'
 
 export default function Description() {
     return (
-        <Stack w={'100%'} p={'xl'}>
+        <Stack w={'100%'} p={{ base: 'md', sm: 'xl' }}>
             <Title order={3}>Описание модели</Title>
             <Text c="dimmed" size="md" ta={'justify'}>
                 Модель Кобба-Дугласа — это экономическая модель, которая

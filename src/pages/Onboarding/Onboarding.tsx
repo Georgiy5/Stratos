@@ -1,12 +1,15 @@
 import { Box, Center, Divider, SimpleGrid, Stack, Text } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import MapDescr from '../../components/Onboarding/MapDescr/MapDescr'
 import AboutProject from '../../components/Onboarding/AboutProject/AboutProject'
 import RegionDescr from '../../components/Onboarding/RegionDescr/RegionDescr'
 import AboutModels from '../../components/Onboarding/AboutModels/AboutModels'
 
 export default function Onboarding() {
+    const isCompact = useMediaQuery('(max-width: 720px)')
+
     return (
-        <Center p={'xl'}>
+        <Center p={isCompact ? 'md' : 'xl'}>
             <Stack align="center" gap={'xl'}>
                 <RegionDescr />
                 <AboutProject />
@@ -25,7 +28,7 @@ export default function Onboarding() {
                         <MapDescr />
                     </SimpleGrid>
                 </Center>
-                <Divider mt={30} w={'70%'} />
+                <Divider mt={30} w={isCompact ? '100%' : '70%'} />
                 <Text size="xl" fw={700} ta={'center'}>
                     Погрузитесь в многогранную Кубань — от рельефа до сложных
                     экономических прогнозов!

@@ -7,17 +7,19 @@ import {
     ThemeIcon,
     useMantineColorScheme,
 } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { IconWorldCheck } from '@tabler/icons-react'
 
 export default function AboutProject() {
     const { colorScheme } = useMantineColorScheme()
+    const isCompact = useMediaQuery('(max-width: 720px)')
 
     return (
         <Paper
             w={'100%'}
             maw={1400}
             mt={30}
-            p="xl"
+            p={isCompact ? 'md' : 'xl'}
             shadow="sm"
             bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
         >

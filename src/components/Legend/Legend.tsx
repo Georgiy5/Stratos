@@ -19,7 +19,7 @@ export default function Legend({ items }: LegendProps) {
     }
 
     return (
-        <Stack px={'xl'} gap={10}>
+        <Stack px={{ base: 'sm', sm: 'xl' }} gap={10}>
             {items.map((item) => (
                 <Group key={item.label} gap={10} align="center">
                     <Box

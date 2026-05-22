@@ -1,14 +1,17 @@
 import { Paper, Overlay, Stack, Group, Button, Text } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { useNavigate } from 'react-router'
 
 export default function RegionDescr() {
     const navigate = useNavigate()
+    const isCompact = useMediaQuery('(max-width: 720px)')
+    const minHeight = isCompact ? 420 : 600
 
     return (
         <Paper
             w={'100%'}
             maw={1400}
-            mih={600}
+            mih={minHeight}
             bg={'url(/k.jpg)'}
             bgsz="cover"
             bgp="center"
@@ -24,14 +27,16 @@ export default function RegionDescr() {
             <Stack
                 pos="relative"
                 style={{ zIndex: 1 }}
-                p="xl"
+                p={isCompact ? 'md' : 'xl'}
                 c="white"
                 justify="space-between"
                 align="center"
-                mih={600}
+                mih={minHeight}
             >
-                <h1>Добро пожаловать в Сердце юга России!</h1>
-                <Text maw={'70%'}>
+                <h1 style={{ fontSize: isCompact ? 26 : 36 }}>
+                    Добро пожаловать в Сердце юга России!
+                </h1>
+                <Text maw={isCompact ? '100%' : '70%'}>
                     Краснодарский край — это земля, где лазурные волны Чёрного
                     моря встречаются с заснеженными пиками Кавказа, а бескрайние
                     золотые поля — с изумрудными виноградниками. Официально

@@ -9,16 +9,19 @@ import {
     Divider,
     Center,
 } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { useState } from 'react'
 import ModelMap from '../../ModelMap/ModelMap'
 import PanZoom from '../../Map/PanZoom'
 import Sliders from './Sliders'
 import Description from './Description'
 import { solouData } from './solouData'
-import LegendOverlay from '../../LegendOverlay/LegendOverlay'
+import Legend from '../../Legend/Legend'
 
 export default function Solou() {
     const { colorScheme } = useMantineColorScheme()
+    const isStacked = useMediaQuery('(max-width: 1080px)')
+    const isCompact = useMediaQuery('(max-width: 720px)')
     const data = solouData
     const legendItems = [
         { label: 'до 9,9 млрд руб.', color: '#36A44E' },
@@ -49,18 +52,26 @@ export default function Solou() {
             1 - numbers.a,
         )
 
+    const mapWidth = isCompact ? 320 : isStacked ? 720 : 1200
+    const mapHeight = mapWidth * (isCompact ? 0.9 : 0.522)
+
     return (
         <Paper
             bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
             maw={1320}
-            p={'xl'}
+            p={isCompact ? 'md' : 'xl'}
         >
-            <Group align="stretch" gap={0} wrap="nowrap">
-                <Stack style={{ flex: 1 }} p={'xl'}>
+            <Group
+                align="stretch"
+                gap={isStacked ? 'lg' : 0}
+                wrap={isStacked ? 'wrap' : 'nowrap'}
+            >
+                <Stack style={{ flex: 1 }} p={isCompact ? 'md' : 'xl'}>
                     <Title order={3}>Модель Солоу</Title>
                     <Text size="xl">
                         Y = K<sup>a</sup> × (L × A) <sup> 1-a</sup>
                     </Text>
+                    {isCompact && <Description />}
                     <Sliders
                         kOptions={kOptions}
                         lOptions={lOptions}
@@ -76,10 +87,18 @@ export default function Solou() {
                         setLPercentOnEnd={setLPercentOnEnd}
                     />
                 </Stack>
-                <Divider orientation="vertical" h={300} w={1} />
-                <Box style={{ flex: 1 }}>
-                    <Description />
-                </Box>
+                {!isCompact && (
+                    <Divider
+                        orientation={isStacked ? 'horizontal' : 'vertical'}
+                        h={isStacked ? 1 : 300}
+                        w={isStacked ? '100%' : 1}
+                    />
+                )}
+                {!isCompact && (
+                    <Box style={{ flex: 1 }}>
+                        <Description />
+                    </Box>
+                )}
             </Group>
 
             {/* <Text c="dimmed" size="lg" mb={10}>
@@ -88,30 +107,69 @@ export default function Solou() {
                 <sup> {1 - numbers.a}</sup> = {yNew.toFixed(2)}
             </Text> */}
             <Center>
-                <Box
-                    style={{
-                        position: 'relative',
-                        borderRadius: 16,
-                        border:
-                            colorScheme === 'dark'
-                                ? '1px solid rgba(255, 255, 255, 0.12)'
-                                : '1px solid rgba(0, 0, 0, 0.08)',
-                    }}
-                >
-                    <LegendOverlay items={legendItems} />
-
-                    <PanZoom
-                        background={
-                            colorScheme === 'dark'
-                                ? 'var(--mantine-color-dark-7)'
-                                : 'var(--mantine-color-gray-1)'
-                        }
-                        width={1200}
-                        height={1200 * 0.522}
+                <Stack align="center" gap="sm">
+                    <Box
+                        style={{
+                            position: 'relative',
+                            borderRadius: 16,
+                            border:
+                                colorScheme === 'dark'
+                                    ? '1px solid rgba(255, 255, 255, 0.12)'
+                                    : '1px solid rgba(0, 0, 0, 0.08)',
+                        }}
                     >
-                        <ModelMap w={1200} y={yNew} model="Solou" />
-                    </PanZoom>
-                </Box>
+                        <PanZoom
+                            background={
+                                colorScheme === 'dark'
+                                    ? 'var(--mantine-color-dark-7)'
+                                    : 'var(--mantine-color-gray-1)'
+                            }
+                            width={mapWidth}
+                            height={mapHeight}
+                        >
+                            <ModelMap w={mapWidth} y={yNew} model="Solou" />
+                        </PanZoom>
+                        {!isCompact && (
+                            <Box
+                                style={{
+                                    position: 'absolute',
+                                    left: 12,
+                                    bottom: 12,
+                                    zIndex: 3,
+                                    maxWidth: 360,
+                                }}
+                            >
+                                <Paper
+                                    radius="md"
+                                    p="xs"
+                                    bg={
+                                        colorScheme === 'dark'
+                                            ? 'rgba(0, 0, 0, 0.55)'
+                                            : 'rgba(255, 255, 255, 0.85)'
+                                    }
+                                    style={{
+                                        backdropFilter: 'blur(3px)',
+                                    }}
+                                >
+                                    <Legend items={legendItems} />
+                                </Paper>
+                            </Box>
+                        )}
+                    </Box>
+                    {isCompact && (
+                        <Paper
+                            radius="md"
+                            p="md"
+                            w="100%"
+                            bg={colorScheme === 'dark' ? 'dark.7' : 'gray.1'}
+                        >
+                            <Text fw={600} size="sm" mb="xs">
+                                Легенда
+                            </Text>
+                            <Legend items={legendItems} />
+                        </Paper>
+                    )}
+                </Stack>
             </Center>
         </Paper>
     )

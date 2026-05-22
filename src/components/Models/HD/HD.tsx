@@ -1,25 +1,28 @@
 import {
     Box,
+    Center,
+    Divider,
+    Group,
     Paper,
+    Select,
+    Stack,
     Text,
     Title,
     useMantineColorScheme,
-    Group,
-    Stack,
-    Divider,
-    Center,
-    Select,
 } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { useState } from 'react'
 import ModelMap from '../../ModelMap/ModelMap'
 import PanZoom from '../../Map/PanZoom'
 import Description from './Description'
 import { hdData } from './hdData'
-import LegendOverlay from '../../LegendOverlay/LegendOverlay'
+import Legend from '../../Legend/Legend'
 import Sliders from './Sliders'
 
 export default function HD() {
     const { colorScheme } = useMantineColorScheme()
+    const isStacked = useMediaQuery('(max-width: 1080px)')
+    const isCompact = useMediaQuery('(max-width: 720px)')
     const data = hdData
     const legendItems = [
         { label: 'до 9,9 млрд руб.', color: '#36A44E' },
@@ -59,14 +62,21 @@ export default function HD() {
                 (numbers.L.value * (1 + lPercentOnEnd / 100)) -
             numbers.A.value)
 
+    const mapWidth = isCompact ? 320 : isStacked ? 720 : 1200
+    const mapHeight = mapWidth * (isCompact ? 0.9 : 0.522)
+
     return (
         <Paper
             bg={colorScheme === 'dark' ? 'dark.6' : 'gray.0'}
             maw={1320}
-            p={'xl'}
+            p={isCompact ? 'md' : 'xl'}
         >
-            <Group align="stretch" gap={0} wrap="nowrap">
-                <Stack style={{ flex: 1 }} p={'xl'}>
+            <Group
+                align="stretch"
+                gap={isStacked ? 'lg' : 0}
+                wrap={isStacked ? 'wrap' : 'nowrap'}
+            >
+                <Stack style={{ flex: 1 }} p={isCompact ? 'md' : 'xl'}>
                     <Title order={3}>Модель Харрода-Домара</Title>
                     <Text size="xl">
                         Y<sub style={{ fontSize: '0.5em' }}>t + 1</sub> = Y
@@ -74,7 +84,13 @@ export default function HD() {
                         <sub style={{ fontSize: '0.5em' }}>t</sub> / V
                         <sub style={{ fontSize: '0.5em' }}>t</sub> - A )
                     </Text>
-                    <Stack w={'100%'} gap={50} align="center" justify="center">
+                    {isCompact && <Description />}
+                    <Stack
+                        w={'100%'}
+                        gap={isCompact ? 'xl' : 50}
+                        align={isCompact ? 'stretch' : 'center'}
+                        justify="center"
+                    >
                         <Select
                             label="Выберите переменные"
                             placeholder="Выберите переменные"
@@ -86,7 +102,9 @@ export default function HD() {
                             onChange={setK}
                             size="md"
                             allowDeselect={false}
-                            miw={300}
+                            w="100%"
+                            maw={isCompact ? '100%' : 420}
+                            styles={{ input: { fontSize: 16 } }}
                         />
                         <Sliders
                             numbers={numbers}
@@ -99,43 +117,84 @@ export default function HD() {
                         />
                     </Stack>
                 </Stack>
-                <Divider orientation="vertical" h={300} w={1} />
-                <Box style={{ flex: 1 }}>
-                    <Description />
-                </Box>
+                {!isCompact && (
+                    <Divider
+                        orientation={isStacked ? 'horizontal' : 'vertical'}
+                        h={isStacked ? 1 : 300}
+                        w={isStacked ? '100%' : 1}
+                    />
+                )}
+                {!isCompact && (
+                    <Box style={{ flex: 1 }}>
+                        <Description />
+                    </Box>
+                )}
             </Group>
 
-            {/* <Text c="dimmed" size="lg" mb={10}>
-                {numbers.K.name}
-                {numbers.L.name}
-                {numbers.A.name}
-                {yNew.toFixed(2)}
-            </Text> */}
             <Center>
-                <Box
-                    style={{
-                        position: 'relative',
-                        borderRadius: 16,
-                        border:
-                            colorScheme === 'dark'
-                                ? '1px solid rgba(255, 255, 255, 0.12)'
-                                : '1px solid rgba(0, 0, 0, 0.08)',
-                    }}
-                >
-                    <LegendOverlay items={legendItems} />
-
-                    <PanZoom
-                        background={
-                            colorScheme === 'dark'
-                                ? 'var(--mantine-color-dark-7)'
-                                : 'var(--mantine-color-gray-1)'
-                        }
-                        width={1200}
-                        height={1200 * 0.522}
+                <Stack align="center" gap="sm">
+                    <Box
+                        style={{
+                            position: 'relative',
+                            borderRadius: 16,
+                            border:
+                                colorScheme === 'dark'
+                                    ? '1px solid rgba(255, 255, 255, 0.12)'
+                                    : '1px solid rgba(0, 0, 0, 0.08)',
+                        }}
                     >
-                        <ModelMap w={1200} y={yNew} model="HD" />
-                    </PanZoom>
-                </Box>
+                        <PanZoom
+                            background={
+                                colorScheme === 'dark'
+                                    ? 'var(--mantine-color-dark-7)'
+                                    : 'var(--mantine-color-gray-1)'
+                            }
+                            width={mapWidth}
+                            height={mapHeight}
+                        >
+                            <ModelMap w={mapWidth} y={yNew} model="HD" />
+                        </PanZoom>
+                        {!isCompact && (
+                            <Box
+                                style={{
+                                    position: 'absolute',
+                                    left: 12,
+                                    bottom: 12,
+                                    zIndex: 3,
+                                    maxWidth: 360,
+                                }}
+                            >
+                                <Paper
+                                    radius="md"
+                                    p="xs"
+                                    bg={
+                                        colorScheme === 'dark'
+                                            ? 'rgba(0, 0, 0, 0.55)'
+                                            : 'rgba(255, 255, 255, 0.85)'
+                                    }
+                                    style={{
+                                        backdropFilter: 'blur(3px)',
+                                    }}
+                                >
+                                    <Legend items={legendItems} />
+                                </Paper>
+                            </Box>
+                        )}
+                    </Box>
+                    {isCompact && (
+                        <Paper
+                            radius="md"
+                            p="md"
+                            w="100%"
+                            bg={colorScheme === 'dark' ? 'dark.7' : 'gray.1'}
+                        >
+                            <Text fw={600} size="sm" mb="xs">
+                                Легенда
+                            </Text>
+                            <Legend items={legendItems} />
+                        </Paper>
+                    )}
+                </Stack>
             </Center>
         </Paper>
     )
