@@ -16,7 +16,7 @@ export default function Onboarding() {
                 <Box mt={30}>
                     <Text size="xl" fw={700} ta={'center'}>
                         Нашей командой разработаны карты региона, отображающие
-                        девять ключевых показателей:
+                        восемь ключевых показателей:
                     </Text>
                 </Box>
                 <Center w={'100%'}>
@@ -30,7 +30,7 @@ export default function Onboarding() {
                 </Center>
                 <Divider mt={30} w={isCompact ? '100%' : '70%'} />
                 <Text size="xl" fw={700} ta={'center'}>
-                    Погрузитесь в многогранную Кубань — от рельефа до сложных
+                    Погрузитесь в многогранную Кубань — от картографии до сложных
                     экономических прогнозов!
                 </Text>
                 <AboutModels />

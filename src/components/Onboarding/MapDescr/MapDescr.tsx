@@ -58,14 +58,14 @@ export default function MapDescr() {
         },
         {
             name: 'Структура экономики по ОКВЭД',
-            descr: 'Чем живёт и зарабатывает край',
+            descr: 'Общероссийский классификатор видов экономической деятельности',
             icon: <Icon360 size={24} stroke={1.5} />,
         },
-        {
-            name: 'Рельеф',
-            descr: 'Природный каркас от степей до горных хребтов',
-            icon: <IconMountain size={24} stroke={1.5} />,
-        },
+        // {
+        //     name: 'Рельеф',
+        //     descr: 'Природный каркас от степей до горных хребтов',
+        //     icon: <IconMountain size={24} stroke={1.5} />,
+        // },
     ]
 
     return arr.map((item) => (

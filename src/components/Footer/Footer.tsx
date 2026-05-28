@@ -1,7 +1,6 @@
 import {
     IconBrandTelegram,
     IconBrandVk,
-    IconBrandWhatsapp,
 } from '@tabler/icons-react'
 import { ActionIcon, Anchor, Group, Text } from '@mantine/core'
 import classes from './Footer.module.css'
@@ -44,22 +43,18 @@ export function FooterCentered() {
                         variant="default"
                         radius="xl"
                         aria-label="Telegram"
+                        onClick={() => window.open('https://t.me/dstu_live', '_blank')}
+
                     >
                         <IconBrandTelegram size={18} stroke={1.5} />
                     </ActionIcon>
-                    <ActionIcon
-                        size="lg"
-                        variant="default"
-                        radius="xl"
-                        aria-label="Whatsapp"
-                    >
-                        <IconBrandWhatsapp size={18} stroke={1.5} />
-                    </ActionIcon>
+                    
                     <ActionIcon
                         size="lg"
                         variant="default"
                         radius="xl"
                         aria-label="VK"
+                        onClick={() => window.open('https://vk.ru/donstu', '_blank')}
                     >
                         <IconBrandVk size={18} stroke={1.5} />
                     </ActionIcon>

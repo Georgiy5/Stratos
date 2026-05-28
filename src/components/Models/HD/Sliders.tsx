@@ -36,7 +36,7 @@ export default function Sliders({
             <Stack
                 w={'100%'}
                 align={isCompact ? 'stretch' : 'center'}
-                justify="center"
+                justify="flex-start"
                 gap={30}
             >
                 <Slider
@@ -53,7 +53,7 @@ export default function Sliders({
                     w="100%"
                 />
                 <Text>
-                    Изменение {numbers.K.name}
+                    Изменение {numbers.K.name.split(' ').map(e => e.startsWith('в') ? '' : e[0].toUpperCase()).join('')}
                     <sub style={{ fontSize: '0.8em' }}>t-1</sub> / ВРП
                     <sub style={{ fontSize: '0.8em' }}>t-1</sub>
                 </Text>
@@ -61,7 +61,7 @@ export default function Sliders({
             <Stack
                 w={'100%'}
                 align={isCompact ? 'stretch' : 'center'}
-                justify="center"
+                justify="flex-start"
                 gap={30}
             >
                 <Slider
@@ -78,7 +78,7 @@ export default function Sliders({
                     w="100%"
                 />
                 <Text>
-                    Изменение {numbers.L.name}
+                    Изменение {numbers.L.name.split(' ').map(e => e[0].toUpperCase()).join('')}
                     <sub style={{ fontSize: '0.8em' }}>t-1</sub> / ВРП
                     <sub style={{ fontSize: '0.8em' }}>t-1</sub>
                 </Text>

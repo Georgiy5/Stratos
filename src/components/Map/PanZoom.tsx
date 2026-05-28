@@ -25,10 +25,6 @@ export default function PanZoom({
     maxScale = 4,
     background,
 }: PanZoomProps) {
-    const isCompact = width < 480
-    const buttonSize = isCompact ? 30 : 34
-    const buttonRadius = isCompact ? 8 : 10
-    const buttonFontSize = isCompact ? 16 : 18
     const [isPanning, setIsPanning] = useState(false)
     const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
     const [isCoarsePointer, setIsCoarsePointer] = useState(false)
@@ -397,31 +393,6 @@ export default function PanZoom({
         setTransform({ x: 0, y: 0, scale: 1 })
     }
 
-    const applyZoom = (
-        zoomFactor: number,
-        centerX: number,
-        centerY: number,
-    ) => {
-        setTransform((prev) => {
-            const nextScale = clamp(prev.scale * zoomFactor, minScale, maxScale)
-            const ratio = nextScale / prev.scale
-
-            return clampTransform({
-                scale: nextScale,
-                x: centerX - (centerX - prev.x) * ratio,
-                y: centerY - (centerY - prev.y) * ratio,
-            })
-        })
-    }
-
-    const zoomIn = () => {
-        applyZoom(1.1, width / 2, height / 2)
-    }
-
-    const zoomOut = () => {
-        applyZoom(0.9, width / 2, height / 2)
-    }
-
     return (
         <div
             ref={containerRef}
@@ -463,62 +434,6 @@ export default function PanZoom({
                 handleTouchEnd(event)
             }}
         >
-            <div
-                style={{
-                    position: 'absolute',
-                    top: isCompact ? 8 : 12,
-                    right: isCompact ? 8 : 12,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 8,
-                    zIndex: 2,
-                }}
-            >
-                <button
-                    type="button"
-                    onClick={zoomIn}
-                    onPointerDown={(event) => event.stopPropagation()}
-                    style={{
-                        width: buttonSize,
-                        height: buttonSize,
-                        borderRadius: buttonRadius,
-                        border: '1px solid rgba(0, 0, 0, 0.08)',
-                        background: 'rgba(255, 255, 255, 0.5)',
-                        fontSize: buttonFontSize,
-                        fontWeight: 600,
-                        lineHeight: '32px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    aria-label="Увеличить"
-                >
-                    +
-                </button>
-                <button
-                    type="button"
-                    onClick={zoomOut}
-                    onPointerDown={(event) => event.stopPropagation()}
-                    style={{
-                        width: buttonSize,
-                        height: buttonSize,
-                        borderRadius: buttonRadius,
-                        border: '1px solid rgba(0, 0, 0, 0.08)',
-                        background: 'rgba(255, 255, 255, 0.5)',
-                        fontSize: buttonFontSize,
-                        fontWeight: 600,
-                        lineHeight: '32px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    aria-label="Уменьшить"
-                >
-                    -
-                </button>
-            </div>
             <div
                 style={{
                     transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,

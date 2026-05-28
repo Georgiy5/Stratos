@@ -1,12 +1,14 @@
 import {
     Box,
     Center,
+    Checkbox,
     Group,
     Paper,
     Select,
     Stack,
     Text,
     Title,
+    Tooltip,
     useMantineColorScheme,
 } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
@@ -16,6 +18,7 @@ import Legend from '../../components/Legend/Legend'
 import LegendDescription from '../../components/LegendDescription/LegendDescription'
 import Map from '../../components/Map/Map'
 import PanZoom from '../../components/Map/PanZoom'
+import OkvedLegend from '../../components/OkvedLegend/OkvedLegend'
 import metrics from '../../metrics/metrics.json'
 
 type MapMeta = Record<
@@ -37,12 +40,12 @@ const metricData = metricsData as MetricData
 const mapMeta = metricsData.mapMeta ?? {}
 
 const mapOptions = [
-    { value: 'Chislennost', label: 'Численность' },
-    { value: 'Plotnost', label: 'Плотность' },
+    { value: 'Chislennost', label: 'Численность населения' },
+    { value: 'Plotnost', label: 'Плотность населения' },
     { value: 'Migrations', label: 'Миграция' },
-    { value: 'VRP', label: 'ВРП' },
+    { value: 'VRP', label: 'Валовый региональный продукт' },
     { value: 'Bezrabotnye', label: 'Безработные' },
-    { value: 'IOK', label: 'ИОК' },
+    { value: 'IOK', label: 'Инвестиции в основной капитал' },
     { value: 'Dotations', label: 'Дотации' },
 ]
 
@@ -53,6 +56,7 @@ export default function Maps() {
     const [metricKey, setMetricKey] = useState<string | null>(
         mapOptions[0]?.value ?? null,
     )
+    const [showOkved, setShowOkved] = useState(false)
     const selectedMap = useMemo(
         () => mapOptions.find((option) => option.value === metricKey) ?? null,
         [metricKey],
@@ -67,6 +71,8 @@ export default function Maps() {
     useEffect(() => {
         setYear(years[years.length - 1] ?? null)
     }, [years])
+
+    const isOkvedAvailable = year === '2024'
 
     const colors = useMemo(() => {
         if (!year || !metricKey || !selectedMap) return {}
@@ -100,6 +106,24 @@ export default function Maps() {
                         allowDeselect={false}
                         styles={{ input: { fontSize: 16 } }}
                     />
+                    <Tooltip
+                        label="Доступно только для 2024 года"
+                        withArrow
+                        disabled={isOkvedAvailable}
+                    >
+                        <Box component="span">
+                            <Checkbox
+                                label="Показать ОКВЭД"
+                                checked={showOkved}
+                                onChange={(event) =>
+                                    setShowOkved(
+                                        event.currentTarget.checked,
+                                    )
+                                }
+                                disabled={!isOkvedAvailable}
+                            />
+                        </Box>
+                    </Tooltip>
                 </Stack>
 
                 <Group align="stretch" gap="lg" w="100%">
@@ -152,7 +176,31 @@ export default function Maps() {
                                         }
                                     >
                                         <Map w={mapWidth} colors={colors} />
+                                        <Box
+                                            component="img"
+                                            src="/ОКВЕД1.svg"
+                                            alt="ОКВЭД"
+                                            style={{
+                                                position: 'absolute',
+                                                top: isCompact ? -5 : 0,
+                                                left: isCompact ? 0 : 0,
+                                                width: '100%',
+                                                height: '100%',
+                                                pointerEvents: 'none',
+                                                zIndex: 2,
+                                                opacity:
+                                                    showOkved &&
+                                                    isOkvedAvailable
+                                                        ? 1
+                                                        : 0,
+                                                transition:
+                                                    'opacity 200ms ease',
+                                            }}
+                                        />
                                     </PanZoom>
+                                    <OkvedLegend
+                                        isAvailable={isOkvedAvailable}
+                                    />
                                     {!isCompact && (
                                         <Box
                                             style={{
