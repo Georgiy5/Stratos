@@ -8,7 +8,6 @@ import {
     Stack,
     Text,
     Title,
-    Tooltip,
     useMantineColorScheme,
 } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
@@ -19,6 +18,7 @@ import LegendDescription from '../../components/LegendDescription/LegendDescript
 import Map from '../../components/Map/Map'
 import PanZoom from '../../components/Map/PanZoom'
 import OkvedLegend from '../../components/OkvedLegend/OkvedLegend'
+import OkvedHint from '../../components/OkvedHint/OkvedHint'
 import metrics from '../../metrics/metrics.json'
 
 type MapMeta = Record<
@@ -72,6 +72,12 @@ export default function Maps() {
         setYear(years[years.length - 1] ?? null)
     }, [years])
 
+    useEffect(() => {
+        if (year !== '2024') {
+            setShowOkved(false)
+        }
+    }, [year])
+
     const isOkvedAvailable = year === '2024'
 
     const colors = useMemo(() => {
@@ -83,6 +89,14 @@ export default function Maps() {
 
     const mapWidth = isCompact ? 320 : isStacked ? 760 : 1200
     const mapHeight = mapWidth * (isCompact ? 0.9 : 0.522)
+    const handleYearChange = (value: string | null) => {
+        setYear(value)
+        if (typeof document !== 'undefined') {
+            requestAnimationFrame(() => {
+                ;(document.activeElement as HTMLElement | null)?.blur()
+            })
+        }
+    }
 
     return (
         <Center w="100%" p={isCompact ? 'md' : 'xl'}>
@@ -90,7 +104,7 @@ export default function Maps() {
                 <Stack align="center" mb={isCompact ? 12 : 20}>
                     <Title order={2}>Карты показателей</Title>
                     <Text c="dimmed" size="md" maw={640} ta={'center'}>
-                        Выберите набор данных и год, чтобы увидеть распределение
+                        Выберите показатель и год, чтобы увидеть распределение
                         по регионам.
                     </Text>
                     <Select
@@ -106,24 +120,17 @@ export default function Maps() {
                         allowDeselect={false}
                         styles={{ input: { fontSize: 16 } }}
                     />
-                    <Tooltip
-                        label="Доступно только для 2024 года"
-                        withArrow
-                        disabled={isOkvedAvailable}
-                    >
-                        <Box component="span">
-                            <Checkbox
-                                label="Показать ОКВЭД"
-                                checked={showOkved}
-                                onChange={(event) =>
-                                    setShowOkved(
-                                        event.currentTarget.checked,
-                                    )
-                                }
-                                disabled={!isOkvedAvailable}
-                            />
-                        </Box>
-                    </Tooltip>
+                    <Group gap={6} align="center">
+                        <Checkbox
+                            label="Показать ОКВЭД"
+                            checked={showOkved}
+                            onChange={(event) =>
+                                setShowOkved(event.currentTarget.checked)
+                            }
+                            disabled={!isOkvedAvailable}
+                        />
+                        {!isOkvedAvailable && <OkvedHint />}
+                    </Group>
                 </Stack>
 
                 <Group align="stretch" gap="lg" w="100%">
@@ -158,7 +165,7 @@ export default function Maps() {
                                             placeholder="Выберите год"
                                             data={years}
                                             value={year}
-                                            onChange={setYear}
+                                            onChange={handleYearChange}
                                             size="xs"
                                             w={isCompact ? 160 : 180}
                                             allowDeselect={false}
@@ -182,7 +189,7 @@ export default function Maps() {
                                             alt="ОКВЭД"
                                             style={{
                                                 position: 'absolute',
-                                                top: isCompact ? -5 : 0,
+                                                top: isCompact ? -3 : 0,
                                                 left: isCompact ? 0 : 0,
                                                 width: '100%',
                                                 height: '100%',

@@ -12,7 +12,6 @@ import {
     IconMan,
     IconMoneybag,
     IconMoneybagPlus,
-    IconMountain,
     IconPlane,
     IconWorld,
 } from '@tabler/icons-react'

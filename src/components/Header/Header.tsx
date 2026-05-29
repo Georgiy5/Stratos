@@ -120,6 +120,10 @@ export default function Header() {
                         p={4}
                         bg={colorScheme === 'dark' ? 'dark.7' : 'gray.2'}
                         style={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)',
                             border:
                                 colorScheme === 'dark'
                                     ? '1px solid var(--mantine-color-gray-8)'

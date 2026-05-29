@@ -33,7 +33,6 @@ export default function PanZoom({
     const lastTouchCenterRef = useRef<{ x: number; y: number } | null>(null)
     const lastTouchDistanceRef = useRef<number | null>(null)
     const containerRef = useRef<HTMLDivElement | null>(null)
-    const isPointerInsideRef = useRef(false)
 
     useEffect(() => {
         const mediaQuery = window.matchMedia(
@@ -53,8 +52,7 @@ export default function PanZoom({
             return container.contains(event.target)
         }
 
-        const shouldBlock = (event: Event) =>
-            isPointerInsideRef.current || isInsideContainer(event)
+        const shouldBlock = (event: Event) => isInsideContainer(event)
 
         const handleNativeWheel = (event: WheelEvent) => {
             if (shouldBlock(event)) {
@@ -366,7 +364,20 @@ export default function PanZoom({
     }
 
     const handlePointerLeave = () => {
-        isPointerInsideRef.current = false
+        stopPanning()
+    }
+
+    const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId)
+        }
+        stopPanning()
+    }
+
+    const handlePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId)
+        }
         stopPanning()
     }
 
@@ -410,11 +421,9 @@ export default function PanZoom({
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
-            onPointerUp={stopPanning}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
             onPointerLeave={handlePointerLeave}
-            onPointerEnter={() => {
-                isPointerInsideRef.current = true
-            }}
             onWheelCapture={handleWheel}
             onDoubleClick={handleDoubleClick}
             onTouchStartCapture={(event) => {
